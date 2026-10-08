@@ -6,7 +6,7 @@ provider "aws" {
 
 
 resource "aws_s3_bucket" "s3-bucket" {
-  bucket = "rithish-bucket-terraform-firl-123456"
+  bucket = "rithish-bucket-terraform-file-123456"
 
   lifecycle {
     prevent_destroy = false
