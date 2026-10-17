@@ -14,17 +14,13 @@ resource "aws_iam_role" "cluster" {
   })
 }
 
-
+# Attach the EKS cluster policy only once
 resource "aws_iam_role_policy_attachment" "cluster_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.cluster.name
 }
 
-resource "aws_iam_role_policy_attachment" "cluster_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.cluster.name
-}
-
+# Create EKS cluster
 resource "aws_eks_cluster" "main" {
   name     = var.cluster_name
   version  = var.cluster_version
@@ -39,6 +35,7 @@ resource "aws_eks_cluster" "main" {
   ]
 }
 
+# IAM role for worker nodes
 resource "aws_iam_role" "node" {
   name = "${var.cluster_name}-node-role"
 
@@ -54,6 +51,7 @@ resource "aws_iam_role" "node" {
   })
 }
 
+# Attach required policies to worker nodes
 resource "aws_iam_role_policy_attachment" "node_policy" {
   for_each = toset([
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
@@ -65,6 +63,7 @@ resource "aws_iam_role_policy_attachment" "node_policy" {
   role       = aws_iam_role.node.name
 }
 
+# Create EKS managed node groups
 resource "aws_eks_node_group" "main" {
   for_each = var.node_groups
 
